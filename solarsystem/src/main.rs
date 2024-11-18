@@ -9,7 +9,7 @@ const SUN_RADIUS: i32 = 50; // Radius of the sun
 struct Planet {
     x: f32,
     y: f32,
-    radius: f32,
+    radius: f32,  // This will be the original radius, scaled when drawing
     color: u32,
     distance_from_sun: f32, // in scaled units
     orbital_period: f32,    // in days
@@ -51,11 +51,14 @@ impl Planet {
         self.y = sun_y + self.distance_from_sun * zoom_factor * self.angle.sin();
     }
 
-    fn draw(&self, buffer: &mut Vec<u32>) {
+    fn draw(&self, buffer: &mut Vec<u32>, zoom_factor: f32) {
+        // Scale the radius based on the zoom factor
+        let scaled_radius = (self.radius * zoom_factor) as i32;
+
         // Draw the planet as a circle
-        for dy in -self.radius as i32..=self.radius as i32 {
-            for dx in -self.radius as i32..=self.radius as i32 {
-                if dx * dx + dy * dy <= self.radius as i32 * self.radius as i32 {
+        for dy in -scaled_radius..=scaled_radius {
+            for dx in -scaled_radius..=scaled_radius {
+                if dx * dx + dy * dy <= scaled_radius * scaled_radius {
                     let px = (self.x + dx as f32) as usize;
                     let py = (self.y + dy as f32) as usize;
                     if px < WIDTH && py < HEIGHT {
@@ -112,7 +115,7 @@ fn main() {
         // Update and draw each planet
         for planet in &mut planets {
             planet.update_position(sun_x, sun_y, time_step, zoom_factor);
-            planet.draw(&mut buffer);
+            planet.draw(&mut buffer, zoom_factor);
         }
 
         // Draw the sun in the center, scaled by the zoom factor
