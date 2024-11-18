@@ -106,10 +106,10 @@ fn main() {
 
         // Check for zoom controls (Use +/- keys for zoom in and out)
         if window.is_key_down(Key::Equal) {  // '+' key
-            zoom_factor *= 1.1; // Zoom in
+            zoom_factor *= 1.01; // Zoom in
         }
         if window.is_key_down(Key::Minus) {  // '-' key
-            zoom_factor *= 0.9; // Zoom out
+            zoom_factor *= 0.99; // Zoom out
         }
 
         // Update and draw each planet
