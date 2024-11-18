@@ -16,7 +16,7 @@ This is a simple 2D simulation of the solar system, visualized using the `minifb
 
 1. **Clone the repository**:
     ```bash
-    git clone https://github.com/your-username/solar-system-simulation.git
+    git clone [https://github.com/dsneed123/solar-system-rust.git]
     cd solar-system-simulation
     ```
 
@@ -71,5 +71,3 @@ This is a simple 2D simulation of the solar system, visualized using the `minifb
 - **Neptune**: Radius: 18, Distance: 600, Orbital Period: 60190 days
 - **Pluto**: Radius: 6, Distance: 700, Orbital Period: 90560 days
 
-## License
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
