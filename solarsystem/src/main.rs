@@ -34,7 +34,7 @@ impl Planet {
         }
     }
 
-    fn update_position(&mut self, sun_x: f32, sun_y: f32, delta_time: f32) {
+    fn update_position(&mut self, sun_x: f32, sun_y: f32, delta_time: f32, zoom_factor: f32) {
         // Calculate the angular velocity (in radians per day)
         let angular_velocity = 2.0 * PI / self.orbital_period;
 
@@ -46,9 +46,9 @@ impl Planet {
             self.angle -= 2.0 * PI;
         }
 
-        // Calculate the new position based on the angle and distance from the sun
-        self.x = sun_x + self.distance_from_sun * self.angle.cos();
-        self.y = sun_y + self.distance_from_sun * self.angle.sin();
+        // Calculate the new position based on the angle and distance from the sun, scaled by zoom factor
+        self.x = sun_x + self.distance_from_sun * zoom_factor * self.angle.cos();
+        self.y = sun_y + self.distance_from_sun * zoom_factor * self.angle.sin();
     }
 
     fn draw(&self, buffer: &mut Vec<u32>) {
@@ -94,22 +94,32 @@ fn main() {
 
     let mut buffer: Vec<u32> = vec![0; WIDTH * HEIGHT];
     let time_step = 1.0; // Simulate one day per second
+    let mut zoom_factor = 1.0; // Initial zoom factor
 
     while window.is_open() && !window.is_key_down(Key::Escape) {
         for pixel in buffer.iter_mut() {
             *pixel = 0x000000; // Clear screen to black
         }
 
+        // Check for zoom controls (Use +/- keys for zoom in and out)
+        if window.is_key_down(Key::Equal) {  // '+' key
+            zoom_factor *= 1.1; // Zoom in
+        }
+        if window.is_key_down(Key::Minus) {  // '-' key
+            zoom_factor *= 0.9; // Zoom out
+        }
+
         // Update and draw each planet
         for planet in &mut planets {
-            planet.update_position(sun_x, sun_y, time_step);
+            planet.update_position(sun_x, sun_y, time_step, zoom_factor);
             planet.draw(&mut buffer);
         }
 
-        // Draw the sun in the center
-        for dy in -SUN_RADIUS..=SUN_RADIUS {
-            for dx in -SUN_RADIUS..=SUN_RADIUS {
-                if dx * dx + dy * dy <= SUN_RADIUS * SUN_RADIUS {
+        // Draw the sun in the center, scaled by the zoom factor
+        let scaled_sun_radius = (SUN_RADIUS as f32 * zoom_factor) as i32;
+        for dy in -scaled_sun_radius..=scaled_sun_radius {
+            for dx in -scaled_sun_radius..=scaled_sun_radius {
+                if dx * dx + dy * dy <= scaled_sun_radius * scaled_sun_radius {
                     let px = (sun_x + dx as f32) as usize;
                     let py = (sun_y + dy as f32) as usize;
                     if px < WIDTH && py < HEIGHT {
